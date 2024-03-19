@@ -41,7 +41,8 @@ app.post('/signup', async (req, res) => {
 app.post('/login', async (req, res) => {
     const { userName, password } = req.body;
     try {
-        const user = await User.findOne({ $or: [{ userName }, { mail: userName }] });
+        // const user = await User.findOne({ $or: [{ userName }, { mail: userName }] });
+        const user = await User.findOne({userName});
         if (user && user.password === password) {
             res.send("Signed in successfully!"); // Signed in successfully
         } else {
