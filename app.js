@@ -43,7 +43,7 @@ app.post('/signup', async(req,res)=>{
     });
 
     if (existingUser) {
-        return res.status(400);
+        return res.status(400).json({ error: "Username already exists" });
     }
 
     const user = new User({
