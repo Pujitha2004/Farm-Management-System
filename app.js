@@ -38,6 +38,28 @@ app.get('/', (req, res) => {
     res.render('index.ejs');
 })
 
+app.post('/signup', async(req,res)=>{
+    const { userName, email, password } = req.body;
+    const existingUser = await User.findOne({
+        userName,
+    });
+
+    if (existingUser) {
+        return res.status(400).render('signup', { error: 'Username already exists' });
+    }
+
+    const user = new User({
+        userName: userName,
+        mail: email,
+        password:password,
+    });
+
+    await user.save();
+
+    res.redirect('/home');
+    console.log(userName, email, password);
+})
+
 app.post('/login', async (req, res) => {
     const { userName, password } = req.body;
     const user = await User.findOne({ userName });
@@ -46,9 +68,10 @@ app.post('/login', async (req, res) => {
         if (password === user.password) {
             const posts = await Post.find({ verified: 0 }).select('courseCode examDate slot examType paperId');
             authenticated = true;
-            res.render('verify.ejs', { posts });
+            res.redirect('/login')
+            // res.render('verify.ejs', { posts });
         } else {
-            res.render('login.ejs')
+            res.redirect('/')
         }
     }
     else {
