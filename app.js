@@ -56,8 +56,9 @@ app.post('/login', async (req, res) => {
     }}
 );
 
-
+app.use(express.static('public'));
 app.set('view engine', 'ejs');
+
 
 app.listen(port, () => {
     console.log(`Server is running on port ${port}`);
