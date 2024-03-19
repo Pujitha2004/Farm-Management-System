@@ -19,9 +19,7 @@ app.use(express.urlencoded({ extended: true }));
 //     secure: true,
 // });
 
-let password = 'quexa';
-let user = 'quexavit:';
-mongoose.connect('mongodb+srv://' + user + password + '@cluster0.b59pavi.mongodb.net/?retryWrites=true&w=majority', {
+mongoose.connect('mongodb+srv://nikhitha:<password>@cluster0.9f7hpig.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0', {
     useNewUrlParser: true,
 });
 
