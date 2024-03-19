@@ -19,7 +19,7 @@ app.use(express.urlencoded({ extended: true }));
 //     secure: true,
 // });
 
-mongoose.connect('mongodb+srv://nikhitha:<password>@cluster0.9f7hpig.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0', {
+mongoose.connect('mongodb+srv://nikhitha:nikhitha789@cluster0.9f7hpig.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0', {
     useNewUrlParser: true,
 });
 
@@ -43,7 +43,7 @@ app.post('/signup', async(req,res)=>{
     });
 
     if (existingUser) {
-        return res.status(400).render('signup', { error: 'Username already exists' });
+        return res.status(400);
     }
 
     const user = new User({
@@ -64,10 +64,7 @@ app.post('/login', async (req, res) => {
 
     if (user) {
         if (password === user.password) {
-            const posts = await Post.find({ verified: 0 }).select('courseCode examDate slot examType paperId');
-            authenticated = true;
             res.redirect('/login')
-            // res.render('verify.ejs', { posts });
         } else {
             res.redirect('/')
         }
