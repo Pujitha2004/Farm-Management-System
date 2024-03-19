@@ -20,7 +20,7 @@ const userSchema = new mongoose.Schema({
     password: String,
 });
 
-const User = mongoose.model('user', userSchema)
+const User = mongoose.model('user', userSchema);
 
 app.get('/', (req, res) => {
     res.render('index.ejs');
