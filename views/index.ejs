@@ -10,17 +10,12 @@
 <body>
     <div class="container">
         <div class="form-box">
-            <h1 id="title">SIGN UP</h1>
-            <form id="authForm" method="post" action="/signup"> <!-- Set the action to /signup -->
+            <h1 id="title">SIGN IN</h1>
+            <form id="signinForm" method="post" action="/login"> <!-- Set the action to /login -->
                 <div class="input-group">
-                    <div class="input-field" id="nameField">
+                    <div class="input-field" id="signinNameField">
                         <i class="fa-solid fa-user"></i>
-                        <input type="text" name="userName" placeholder="NAME">
-                    </div>
-
-                    <div class="input-field">
-                        <i class="fa-solid fa-envelope"></i>
-                        <input type="email" name="email" placeholder="E-MAIL">
+                        <input type="text" name="userName" placeholder="USERNAME">
                     </div>
 
                     <div class="input-field">
@@ -32,44 +27,67 @@
                         <input type="checkbox" id="rememberMe">
                         <label for="rememberMe">Remember Me</label>
                     </p>
-                    
-                    <p> Forgot password? <a href="#">Click here</a></p>
                 </div>
                 <div class="btn-filed">
-                    <button type="button" id="SIGNUPBtn">SIGN UP</button>
-                    <button type="button" id="SIGNINBtn">SIGN IN</button>
+                    <button type="submit">SIGN IN</button>
                 </div>
-                <button type="submit" id="submitButton" style="display: none;">SUBMIT</button> <!-- Submit button -->
             </form>
+            
+            <p>If you are a new user, <a href="#" id="signupLink">click here</a> to sign up.</p>
+        </div>
+
+        <div class="form-box" style="display: none;" id="signupFormBox">
+            <h1 id="signupTitle">SIGN UP</h1>
+            <form id="signupForm" method="post" action="/signup"> <!-- Set the action to /signup -->
+                <div class="input-group1">
+                    <div class="input-field" id="signupNameField">
+                        <i class="fa-solid fa-user"></i>
+                        <input type="text" name="userName" placeholder="USERNAME">
+                    </div>
+
+                    <div class="input-field">
+                        <i class="fa-solid fa-envelope"></i>
+                        <input type="email" name="email" placeholder="E-MAIL">
+                    </div>
+
+                    <div class="input-field">
+                        <i class="fa-solid fa-lock"></i>
+                        <input type="password" name="password" placeholder="PASSWORD">
+                    </div>
+                </div>
+                <div class="btn-filed">
+                    <button type="submit">SIGN UP</button>
+                </div>
+            </form>
+            <p>If you are already registered, <a href="#" id="signinLink">click here</a> to sign in.</p>
         </div>
     </div>
 
     <div id="messageContainer" style="display: none;"></div> <!-- Container for displaying messages -->
 
     <script>
-        let SIGNUPBtn = document.getElementById("SIGNUPBtn");
-        let SIGNINBtn = document.getElementById("SIGNINBtn");
-        let nameField = document.getElementById("nameField");
-        let title = document.getElementById("title");
-        let authForm = document.getElementById("authForm");
-        let submitButton = document.getElementById("submitButton");
+        let signupLink = document.getElementById("signupLink");
+        let signinLink = document.getElementById("signinLink");
+        let forgotPasswordLink = document.getElementById("forgotPasswordLink");
 
-        SIGNUPBtn.onclick = function() {
-            nameField.style.maxHeight = "60px";
-            title.innerHTML = "SIGN UP";
-            authForm.setAttribute("action", "/signup");
-            submitButton.style.display = "block"; // Show submit button
+        signupLink.onclick = function() {
+            document.getElementById("title").innerText = "SIGN UP";
+            document.getElementById("signinForm").style.display = "none";
+            document.getElementById("signupFormBox").style.display = "block";
+            return false;
         };
 
-        SIGNINBtn.onclick = function() {
-            nameField.style.maxHeight = "0";
-            title.innerHTML = "SIGN IN";
-            authForm.setAttribute("action", "/login");
-            submitButton.style.display = "block"; // Show submit button
+        signinLink.onclick = function() {
+            document.getElementById("title").innerText = "SIGN IN";
+            document.getElementById("signinForm").style.display = "block";
+            document.getElementById("signupFormBox").style.display = "none";
+            return false;
         };
 
-        submitButton.onclick = function() {
-            authForm.submit(); // Submit the form
+        forgotPasswordLink.onclick = function() {
+            // Add your forgot password logic here
+            alert("Forgot password link clicked!");
+            return false;
         };
     </script>
 </body>

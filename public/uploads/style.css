@@ -60,7 +60,6 @@ input[type="checkbox"] {
 
 .remember-me {
     text-align: left;
-    margin-bottom: 15px;
 }
 
 .remember-me label {
@@ -111,13 +110,16 @@ form p a{
     color:#3c00a0;
 }
 
-.btn-filed{
+.btn-filed {
     width: 100%;
     display: flex;
-    justify-content: space-between;
+    justify-content: center;
+    /*margin-top: 10px; /* Adjust margin to move the buttons somewhat up */
+    margin-bottom : 20px;
 }
-.btn-filed button{
-    flex-basis: 48%;
+
+.btn-filed button {
+    flex-basis: 48%; /* Adjust button width if needed */
     background: #3c00a0;
     color: #fff;
     height: 40px;
@@ -126,13 +128,16 @@ form p a{
     outline: 0;
     cursor: pointer;
     transition: background 1s;
+    
 }
 
 /*space and allignment btw input and buttons*/
-.input-group{
-    height: 280px;
+.input-group1{
+    height: 210px;
 }
-
+.input-group{
+    height: 170px;
+}
 .btn-filed button.disable{
     background: #eaeaea;
     color:#555;

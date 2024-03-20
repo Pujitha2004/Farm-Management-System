@@ -26,10 +26,16 @@ app.get('/', (req, res) => {
 app.post('/signup', async (req, res) => {
     const { userName, email, password } = req.body;
     try {
-        const existingUser = await User.findOne({ userName });
-        if (existingUser) {
-            return res.status(400).json({ error: "Username already exists" });
+        const existingUserByEmail = await User.findOne({ mail: email });
+        if (existingUserByEmail) {
+            return res.status(400).json({ error: "Email already exists, please use a different email address" });
         }
+
+        const existingUserByUsername = await User.findOne({ userName });
+        if (existingUserByUsername) {
+            return res.status(400).json({ error: "Username already exists, please choose a different username" });
+        }
+
         const user = new User({ userName, mail: email, password });
         await user.save();
         res.render('signup_success.ejs'); // Render the signup success view
@@ -41,12 +47,11 @@ app.post('/signup', async (req, res) => {
 app.post('/login', async (req, res) => {
     const { userName, password } = req.body;
     try {
-        // const user = await User.findOne({ $or: [{ userName }, { mail: userName }] });
-        const user = await User.findOne({userName});
+        const user = await User.findOne({ userName });
         if (user && user.password === password) {
             res.send("Signed in successfully!"); // Signed in successfully
         } else {
-            res.status(400).send("Please enter the correct credentials"); // Incorrect username/email or password
+            res.status(400).send("Enter the valid credentials!!"); // Incorrect username or password
         }
     } catch (error) {
         res.status(500).send("Error signing in. Please try again later.");
