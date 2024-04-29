@@ -63,7 +63,11 @@
         </div>
     </div>
 
-    <div id="messageContainer" style="display: none;"></div> <!-- Container for displaying messages -->
+    <div id="messageContainer" style="display: none;">
+        <% if (message) { %>
+            <script>alert("<%= message %>");</script>
+        <% } %>
+    </div> <!-- Container for displaying messages -->
 
     <script>
         let signupLink = document.getElementById("signupLink");

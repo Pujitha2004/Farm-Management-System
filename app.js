@@ -22,13 +22,14 @@ const userSchema = new mongoose.Schema({
     mail: String,
     password: String,
     loginAttempts: { type: Number, default: 0 },
-    lockUntil: { type: Number, default: 0 }
+    lockUntil: { type: Number, default: 0 },
+    activeSessions: [String] // Store session IDs of active sessions
 });
 
 const User = mongoose.model('user', userSchema);
 
 app.get('/', (req, res) => {
-    res.render('index.ejs');
+    res.render('index.ejs', { message: req.session.message });
 });
 
 app.post('/signup', async (req, res) => {
@@ -36,60 +37,75 @@ app.post('/signup', async (req, res) => {
     // Regular expression to check for strong password
     const strongPasswordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
     if (!strongPasswordRegex.test(password)) {
-        return res.status(400).send("Please make your password strong by adding special characters, numbers, and both lowercase and uppercase alphabets.");
+        req.session.message = "Please make your password strong by adding special characters, numbers, and both lowercase and uppercase alphabets.";
+        return res.redirect('/');
     }
     try {
         const existingUserByEmail = await User.findOne({ mail: email });
         if (existingUserByEmail) {
-            return res.status(400).json({ error: "Email already exists, please use a different email address" });
+            req.session.message = "Email already exists, please use a different email address";
+            return res.redirect('/');
         }
 
         const existingUserByUsername = await User.findOne({ userName });
         if (existingUserByUsername) {
-            return res.status(400).json({ error: "Username already exists, please choose a different username" });
+            req.session.message = "Username already exists, please choose a different username";
+            return res.redirect('/');
         }
 
         const user = new User({ userName, mail: email, password });
         await user.save();
         req.session.user = user; // Store user data in session after successful signup
-        res.render('signup_success.ejs'); // Render the signup success view
+        req.session.message = "Signup successful!";
+        return res.redirect('/');
     } catch (error) {
-        res.status(500).send("Error signing up. Please try again later.");
+        req.session.message = "Error signing up. Please try again later.";
+        return res.redirect('/');
     }
 });
 
 app.post('/login', async (req, res) => {
     const { userName, password } = req.body;
     try {
-        if (req.session.user) {
-            return res.status(400).send("Another user is already logged in. Please log out before logging in again.");
-        }
         const user = await User.findOne({ userName });
+
         if (user) {
-            if (user.lockUntil && user.lockUntil > Date.now()) {
-                return res.status(400).send(`Your account is locked. Please try again after ${Math.ceil((user.lockUntil - Date.now()) / 3600000)} hours.`);
-            }
-            if (user.loginAttempts >= 5 && (!user.lockUntil || user.lockUntil <= Date.now())) {
-                user.loginAttempts = 0;
-                user.lockUntil = Date.now() + 24 * 60 * 60 * 1000; // Lock the account for 24 hours
-                await user.save();
-                return res.status(400).send(`Your account is locked. Please try again after 24 hours.`);
-            }
-            if (user.password === password) {
-                req.session.user = user; // Store user data in session after successful login
-                user.loginAttempts = 0; // Reset login attempts
-                await user.save();
-                return res.send("Signed in successfully!"); // Signed in successfully
-            } else {
+            // Check if passwords match
+            if (user.password !== password) {
                 user.loginAttempts++;
+                if (user.loginAttempts >= 5 && (!user.lockUntil || user.lockUntil <= Date.now())) {
+                    user.lockUntil = Date.now() + 3600000; // Lock the account for 1 hour
+                    req.session.message = "Due to multiple invalid login attempts, your account is locked. Please try again after 1 hour.";
+                } else {
+                    req.session.message = "Passwords do not match. Please try again.";
+                }
                 await user.save();
-                return res.status(400).send("Enter the valid credentials!!"); // Incorrect username or password
+                return res.redirect('/');
             }
+
+            if (user.activeSessions.includes(req.sessionID)) {
+                req.session.message = "Another user is already logged in. Please log out before logging in again.";
+                return res.redirect('/');
+            }
+
+            if (user.lockUntil && user.lockUntil > Date.now()) {
+                req.session.message = `Your account is locked. Please try again after ${Math.ceil((user.lockUntil - Date.now()) / 3600000)} hour.`;
+                return res.redirect('/');
+            }
+
+            user.activeSessions.push(req.sessionID); // Add session ID to activeSessions array
+            req.session.user = user; // Store user data in session after successful login
+            user.loginAttempts = 0; // Reset login attempts
+            await user.save();
+            req.session.message = "Signed in successfully!";
+            return res.redirect('/');
         } else {
-            res.status(400).send("Enter the valid credentials!!"); // Incorrect username or password
+            req.session.message = "Please enter the valid credentials";
+            return res.redirect('/');
         }
     } catch (error) {
-        res.status(500).send("Error signing in. Please try again later.");
+        req.session.message = "Error signing in. Please try again later.";
+        return res.redirect('/');
     }
 });
 
